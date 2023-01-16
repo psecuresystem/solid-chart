@@ -1,19 +1,18 @@
-import * as React from 'react'
-
+import { createContext, JSXElement, useContext } from 'solid-js'
 import { ChartContextValue } from '../types'
 
-const chartContext = React.createContext<any>(null!)
+const chartContext = createContext<any>(null!)
 
 export function ChartContextProvider<TDatum>({
   value,
   children,
 }: {
   value: () => ChartContextValue<TDatum>
-  children: React.ReactNode
+  children: JSXElement
 }) {
   return <chartContext.Provider value={value} children={children} />
 }
 
 export default function useChartContext<TDatum>() {
-  return React.useContext(chartContext)() as ChartContextValue<TDatum>
+  return useContext(chartContext)() as ChartContextValue<TDatum>
 }

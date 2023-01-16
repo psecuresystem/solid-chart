@@ -275,8 +275,8 @@ function buildTimeAxis<TDatum>(
     const diff = bandEnd.valueOf() - bandStart.valueOf()
 
     scale.domain([
-      new Date(scale.domain()[0].valueOf() - diff / 2),
-      new Date(scale.domain()[1].valueOf() + diff / 2),
+      new Date(scale.domain()[0]!.valueOf() - diff / 2),
+      new Date(scale.domain()[1]!.valueOf() + diff / 2),
     ])
   }
 
@@ -564,21 +564,22 @@ function stackSeries<TDatum>(series: Series<TDatum>[], axisOptions: AxisOptions<
 
   const stacked = stacker(
     Array.from({
-      length: series.sort((a, b) => b.datums.length - a.datums.length)[0].datums.length,
+      length: series.sort((a, b) => b.datums.length - a.datums.length)[0]?.datums.length || 0,
     }),
   )
 
   for (let sIndex = 0; sIndex < stacked.length; sIndex++) {
     const s = stacked[sIndex]
 
-    for (let i = 0; i < s.length; i++) {
-      const datum = s[i]
+    for (let i = 0; i < s!.length; i++) {
+      const datum = s?.[i]
 
-      if (series[sIndex].datums[i]) {
+      if (series[sIndex]!.datums[i]) {
         // @ts-ignore
         datum.data = series[sIndex].datums[i]
-
-        series[sIndex].datums[i].stackData = datum as unknown as StackDatum<TDatum>
+        if (series[sIndex] && series[sIndex]!.datums[i]) {
+          series[sIndex]!.datums[i]!.stackData = datum as unknown as StackDatum<TDatum>
+        }
       }
     }
   }
@@ -597,13 +598,13 @@ function buildPrimaryBandScale<TDatum>(
   for (let i = 0; i < series.length; i++) {
     const serie = series[i]
 
-    for (let j = 0; j < serie.datums.length; j++) {
-      const d1 = serie.datums[j]
-      const one = scale(d1.primaryValue ?? NaN)
+    for (let j = 0; j < serie!.datums.length; j++) {
+      const d1 = serie!.datums[j]
+      const one = scale(d1!.primaryValue ?? NaN)
 
-      for (let k = 0; k < serie.datums.length; k++) {
-        const d2 = serie.datums[k]
-        const two = scale(d2.primaryValue ?? NaN)
+      for (let k = 0; k < serie!.datums.length; k++) {
+        const d2 = serie!.datums[k]
+        const two = scale(d2!.primaryValue ?? NaN)
 
         if (one === two) {
           continue
