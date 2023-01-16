@@ -2,7 +2,7 @@ import { ScaleBand, ScaleLinear, ScaleTime } from 'd3-scale'
 import { CurveFactory, stackOffsetNone } from 'd3-shape'
 import * as CSS from 'csstype'
 import * as TSTB from 'ts-toolbelt'
-import { Component, createSignal, Setter } from 'solid-js'
+import { createSignal, JSXElement, Setter } from 'solid-js'
 
 import { TooltipRendererProps } from './components/TooltipRenderer'
 
@@ -35,7 +35,7 @@ export type ChartOptions<TDatum> = {
   onFocusDatum?: (datum: Datum<TDatum> | null) => void
   onClickDatum?: (datum: Datum<TDatum> | null, event: MouseEvent) => void
   dark?: boolean
-  renderSVG?: () => Component
+  renderSVG?: () => JSXElement
   primaryCursor?: boolean | CursorOptions
   secondaryCursor?: boolean | CursorOptions
   tooltip?: boolean | TooltipOptions<TDatum>
@@ -94,7 +94,7 @@ export type TooltipOptions<TDatum> = {
   show?: boolean
   // anchor?: AnchorMode
   // arrowPosition?: AlignPosition
-  render?: (props: TooltipRendererProps<TDatum>) => Component
+  render?: (props: TooltipRendererProps<TDatum>) => JSXElement
   // formatSecondary?: (d: unknown) => string | number
   // formatTertiary?: (d: unknown) => string | number
   invert?: boolean
@@ -244,8 +244,8 @@ export type AxisTimeOptions<TDatum> = AxisOptionsBase & {
   padBandRange?: boolean
   formatters?: {
     scale?: (value: Date, formatters: AxisTimeOptions<TDatum>['formatters']) => string
-    tooltip?: (value: Date, formatters: AxisTimeOptions<TDatum>['formatters']) => Component
-    cursor?: (value: Date, formatters: AxisTimeOptions<TDatum>['formatters']) => Component
+    tooltip?: (value: Date, formatters: AxisTimeOptions<TDatum>['formatters']) => JSXElement
+    cursor?: (value: Date, formatters: AxisTimeOptions<TDatum>['formatters']) => JSXElement
   }
 }
 
@@ -259,8 +259,8 @@ export type AxisLinearOptions<TDatum> = AxisOptionsBase & {
   // base?: number
   formatters?: {
     scale?: (value: number, formatters: AxisLinearOptions<TDatum>['formatters']) => string
-    tooltip?: (value: number, formatters: AxisLinearOptions<TDatum>['formatters']) => Component
-    cursor?: (value: number, formatters: AxisLinearOptions<TDatum>['formatters']) => Component
+    tooltip?: (value: number, formatters: AxisLinearOptions<TDatum>['formatters']) => JSXElement
+    cursor?: (value: number, formatters: AxisLinearOptions<TDatum>['formatters']) => JSXElement
   }
 }
 
@@ -270,8 +270,8 @@ export type AxisBandOptions<TDatum> = AxisOptionsBase & {
   originalSinBandSize?: number
   formatters?: {
     scale?: (value: any, formatters: AxisBandOptions<TDatum>['formatters']) => string
-    tooltip?: (value: Component, formatters: AxisBandOptions<TDatum>['formatters']) => string
-    cursor?: (value: Component, formatters: AxisBandOptions<TDatum>['formatters']) => string
+    tooltip?: (value: JSXElement, formatters: AxisBandOptions<TDatum>['formatters']) => string
+    cursor?: (value: JSXElement, formatters: AxisBandOptions<TDatum>['formatters']) => string
   }
 }
 
@@ -326,8 +326,8 @@ export type AxisTime<TDatum> = Omit<
   formatters: {
     default: (value: Date) => string
     scale: (value: Date) => string
-    tooltip: (value: Date) => Component
-    cursor: (value: Date) => Component
+    tooltip: (value: Date) => JSXElement
+    cursor: (value: Date) => JSXElement
   }
 }
 
@@ -345,8 +345,8 @@ export type AxisLinear<TDatum> = Omit<
   formatters: {
     default: (value: ChartValue<any>) => string
     scale: (value: number) => string
-    tooltip: (value: number) => Component
-    cursor: (value: number) => Component
+    tooltip: (value: number) => JSXElement
+    cursor: (value: number) => JSXElement
   }
 }
 
@@ -364,8 +364,8 @@ export type AxisBand<TDatum> = Omit<
   formatters: {
     default: (value: any) => string
     scale: (value: any) => string
-    tooltip: (value: Component) => string
-    cursor: (value: Component) => string
+    tooltip: (value: JSXElement) => string
+    cursor: (value: JSXElement) => string
   }
 }
 

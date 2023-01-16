@@ -46,7 +46,7 @@ export function materializeStyles(
   style = normalizeColor(style, defaults)
   for (let i = 0; i < elementTypes.length; i++) {
     const type = elementTypes[i]
-    if (style[type] && defaults[type]) {
+    if (type != undefined && style[type] && defaults[type]) {
       style[type] = materializeStyles(style[type], defaults)
     }
   }
