@@ -31,7 +31,7 @@ export default function BarComponent<TDatum>({
         const style = getSeriesStatusStyle(series, focusedDatum)
 
         return (
-          <g key={`lines-${i}`}>
+          <g>
             {series.datums.map((datum, i) => {
               const dataStyle = getDatumStatusStyle(datum, focusedDatum)
 
@@ -126,7 +126,7 @@ export function getPrimaryLength<TDatum>(
 function getSecondaryLength<TDatum>(datum: Datum<TDatum>, secondaryAxis: Axis<TDatum>): number {
   const secondary = [getSecondaryStart(datum, secondaryAxis), getSecondary(datum, secondaryAxis)]
 
-  return Math.abs(secondary[1] - secondary[0])
+  return Math.abs(secondary[1]! - secondary[0]!)
 }
 
 function getRectX<TDatum>(
@@ -190,7 +190,7 @@ function clampPxToAxis<TDatum>(startPx: number, lengthPx: number, axis: Axis<TDa
     range.reverse()
   }
 
-  const safe = (num: number) => Math.max(range[0], Math.min(num, range[1]))
+  const safe = (num: number) => Math.max(range[0]!, Math.min(num, range[1]!))
 
   const safeStart = safe(startPx)
   const safeEnd = safe(startPx + lengthPx)

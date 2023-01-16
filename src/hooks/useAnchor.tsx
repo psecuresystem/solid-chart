@@ -1,3 +1,4 @@
+import { Accessor, createMemo } from 'solid-js'
 import useRect from './useRect'
 
 //
@@ -64,19 +65,20 @@ const sideSchemas = {
 // anchored to them in relation to the parent portal container (either the only
 // one defined or the one referenced by Id).
 export function useAnchor(options: {
-  show: boolean
-  useLargest?: boolean
-  side: SideOption | SideOption[]
-  portalEl: Element | null | undefined
-  anchorEl: Element | null | undefined
-  tooltipEl: Element | null | undefined
+  show: Accessor<boolean>
+  useLargest?: Accessor<boolean>
+  side: Accessor<SideOption | SideOption[]>
+  portalEl: Accessor<Element | null | undefined>
+  anchorEl: Accessor<Element | null | undefined>
+  tooltipEl: Accessor<Element | null | undefined>
 }) {
-  const portalDims = useRect(options.portalEl, options.show)
-  const anchorDims = useRect(options.anchorEl, options.show)
-  const tooltipDims = useRect(options.tooltipEl, options.show)
+  const portalDims = useRect(options.portalEl(), options.show())
+  const anchorDims = useRect(options.anchorEl(), options.show())
+  const tooltipDims = useRect(options.tooltipEl(), options.show())
 
-  const sides = React.useMemo(() => {
-    const preSides = Array.isArray(options.side) ? options.side : [options.side]
+  const sides = createMemo(() => {
+    const side = options.side()
+    const preSides = Array.isArray(side) ? side : [side]
     return preSides.map(alignStr => {
       const [side, align = 'center'] = alignStr.split(' ') as [Side, AlignMode]
       const incompatibleSide = !['top', 'right', 'bottom', 'left'].find(d => side === d)
@@ -99,25 +101,22 @@ export function useAnchor(options: {
 
       return [side, align] as [Side, AlignMode]
     })
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [JSON.stringify(options.side)])
+  })
 
   // IF we have all of the dimensions needed to calculate
   // fits, then calculate the fit
   const ready = portalDims && tooltipDims && anchorDims
 
-  const fit = React.useMemo(
-    () =>
-      ready && options.show
-        ? fitOnBestSide({
-            portalDims,
-            tooltipDims,
-            anchorDims,
-            sides,
-            useLargest: options.useLargest,
-          })
-        : null,
-    [anchorDims, options.show, options.useLargest, portalDims, ready, sides, tooltipDims],
+  const fit = createMemo(() =>
+    ready && options.show()
+      ? fitOnBestSide({
+          portalDims,
+          tooltipDims,
+          anchorDims,
+          sides: sides(),
+          useLargest: options.useLargest?.(),
+        })
+      : null,
   )
 
   return {
@@ -126,7 +125,7 @@ export function useAnchor(options: {
       position: 'absolute' as const,
       visibility: ready ? ('visible' as const) : ('hidden' as const),
       // The fit styles are applied here from the best fit
-      ...fit?.style,
+      ...fit()?.style,
     },
   }
 }
