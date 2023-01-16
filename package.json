@@ -1,17 +1,17 @@
 {
   "version": "0.0.0",
-  "name": "{{name_of_lib}}",
-  "description": "{{desc_of_lib}}",
+  "name": "solid-chart",
+  "description": "A react chartjs implementation ported to solidjs",
   "license": "MIT",
-  "author": "{{me}}",
+  "author": "Vision Onyeaku",
   "contributors": [],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/{{me}}/{{name_of_lib}}.git"
+    "url": "git+https://github.com/psecuresystem/solid-chart.git"
   },
-  "homepage": "https://github.com/{{me}}/{{name_of_lib}}#readme",
+  "homepage": "https://github.com/psecuresystem/solid-chart#readme",
   "bugs": {
-    "url": "https://github.com/{{me}}/{{name_of_lib}}/issues"
+    "url": "https://github.com/psecuresystem/solid-chart/issues"
   },
   "files": [
     "dist"
@@ -68,6 +68,8 @@
     "solid-js": ">=1.6.0"
   },
   "devDependencies": {
+    "@types/d3-scale": "^4.0.3",
+    "@types/d3-shape": "^3.1.1",
     "esbuild": "^0.17.0",
     "esbuild-plugin-solid": "^0.4.2",
     "prettier": "2.8.3",
@@ -81,5 +83,13 @@
   "keywords": [
     "solid"
   ],
-  "packageManager": "pnpm@7.20.0"
+  "packageManager": "pnpm@7.20.0",
+  "dependencies": {
+    "@types/d3-array": "^3.0.4",
+    "csstype": "^3.1.1",
+    "d3-array": "^3.2.1",
+    "d3-scale": "^4.0.2",
+    "d3-shape": "^3.2.0",
+    "ts-toolbelt": "^9.6.0"
+  }
 }
