@@ -1,11 +1,13 @@
-import React from 'react'
+import { Accessor, createEffect, createSignal } from 'solid-js'
 
-export default function useLatestWhen<T>(obj: T, when: boolean = true) {
-  const ref = React.useRef<T | null>(when ? obj : null)
+export default function useLatestWhen<T>(obj: T, when: Accessor<boolean> = () => true) {
+  const [ref, setRef] = createSignal<T | null>(when() ? obj : null)
 
-  if (when) {
-    ref.current = obj
-  }
+  createEffect(() => {
+    if (when()) {
+      setRef(prev => obj)
+    }
+  })
 
-  return ref.current
+  return ref
 }

@@ -1,53 +1,52 @@
-import React from 'react'
+import { Accessor, createEffect, createMemo, createSignal, on, onCleanup } from 'solid-js'
 import { Spring } from '../utils/spring'
 import useGetLatest from './useGetLatest'
 
 export function useSpring(
-  value: number,
+  value: Accessor<number>,
   config: [number, number, number],
   cb: (x: number) => void,
-  immediate?: boolean,
-  debug?: boolean,
+  immediate?: Accessor<boolean>,
+  debug?: Accessor<boolean>,
 ) {
-  const springRef = React.useRef(new Spring(value, ...config))
-  const getValue = useGetLatest(value)
+  const springRef = new Spring(value(), ...config)
+  const getValue = useGetLatest(value())
 
   const [startRaf, stopRaf] = useRaf(() => {
-    cb(springRef.current.x())
-    return springRef.current.done()
+    cb(springRef.x())
+    return springRef.done()
   })
 
   // Immediate
-  React.useEffect(() => {
-    if (immediate) {
-      springRef.current.snap(getValue())
-      startRaf()
-      return
-    }
-    springRef.current.setEnd(value)
-    startRaf()
-  }, [debug, getValue, immediate, startRaf, stopRaf, value])
+  createEffect(
+    on(
+      () => [debug?.(), getValue(), immediate?.(), startRaf?.(), stopRaf?.(), value?.()],
+      () => {
+        if (immediate) {
+          springRef.snap(getValue())
+          startRaf?.()
+          return
+        }
+        springRef.setEnd(value())
+        startRaf?.()
+      },
+    ),
+  )
 
-  React.useEffect(() => {
-    return () => {
-      stopRaf()
-    }
-  }, [stopRaf])
+  onCleanup(() => {
+    stopRaf?.()
+  })
 
-  return springRef.current
+  return springRef
 }
 
 export function useRaf(callback: () => any) {
-  const raf = React.useRef<number | null>(null)
-  const rafCallback = React.useRef(callback)
-  rafCallback.current = callback
-  const tick = React.useCallback(() => {
-    if (rafCallback.current()) return
-    raf.current = requestAnimationFrame(tick)
-  }, [])
+  const [raf, setRaf] = createSignal<number | null>(null)
+  const rafCallback = callback
+  const tick = () => {
+    if (rafCallback()) return
+    setRaf(requestAnimationFrame(tick))
+  }
 
-  return [
-    React.useMemo(() => tick, [tick]),
-    React.useMemo(() => () => raf.current && cancelAnimationFrame(raf.current), []),
-  ]
+  return [tick, () => raf() && cancelAnimationFrame(raf() as number)]
 }

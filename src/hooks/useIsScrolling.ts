@@ -1,41 +1,28 @@
-import * as React from 'react'
-import ReactDOM from 'react-dom'
+import { Accessor, createEffect, createSignal, onCleanup } from 'solid-js'
 
-export const unstable_batchedUpdates = ReactDOM.unstable_batchedUpdates
+export default function useIsScrolling(debounce: Accessor<number>) {
+  const [isScrolling, setIsScrolling] = createSignal(false)
 
-import useIsomorphicLayoutEffect from './useIsomorphicLayoutEffect'
-
-export default function useIsScrolling(debounce: number) {
-  const rerender = React.useReducer(() => ({}), {})[1]
-
-  const ref = React.useRef(false)
-
-  useIsomorphicLayoutEffect(() => {
+  createEffect(() => {
     let timeout: ReturnType<typeof setTimeout>
 
     const cb = () => {
-      if (!ref.current) {
-        ref.current = true
-        rerender()
-      }
+      setIsScrolling(true)
 
       clearTimeout(timeout)
 
       timeout = setTimeout(() => {
-        if (ref.current) {
-          ref.current = false
-          rerender()
-        }
-      }, debounce)
+        setIsScrolling(false)
+      }, debounce())
     }
 
     document.addEventListener('scroll', cb, true)
 
-    return () => {
+    onCleanup(() => {
       clearTimeout(timeout)
       document.removeEventListener('scroll', cb)
-    }
-  }, [debounce])
+    })
+  })
 
-  return ref.current
+  return isScrolling
 }

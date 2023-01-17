@@ -1,7 +1,10 @@
-export default function useRect(element: Element | null | undefined, enabled: boolean): DOMRect {
-  const rerender = React.useReducer(() => ({}), [])[1]
+import { Accessor, createEffect, createSignal, onCleanup } from 'solid-js'
 
-  const rectRef = React.useRef<DOMRect>({
+export default function useRect(
+  element: Accessor<Element | null | undefined>,
+  enabled: boolean,
+): Accessor<DOMRect> {
+  const [rectRef, setRectRef] = createSignal({
     width: 0,
     height: 0,
     x: 0,
@@ -12,24 +15,25 @@ export default function useRect(element: Element | null | undefined, enabled: bo
     bottom: 0,
   } as DOMRect)
 
-  const measure = React.useCallback(() => {
-    if (element) {
-      rectRef.current = element.getBoundingClientRect()
+  const measure = () => {
+    if (element()) {
+      element() && setRectRef(element()!.getBoundingClientRect())
     }
-  }, [element])
-
-  if (!rectRef.current) {
-    measure()
   }
 
-  React.useEffect(() => {
+  createEffect(() => {
+    if (!rectRef) {
+      measure()
+    }
+  })
+
+  createEffect(() => {
     if (!element || !enabled) {
       return
     }
 
     const cb = () => {
       measure()
-      rerender()
     }
 
     document.addEventListener('scroll', cb, true)
@@ -37,27 +41,25 @@ export default function useRect(element: Element | null | undefined, enabled: bo
     return () => {
       document.removeEventListener('scroll', cb, true)
     }
-  }, [element, enabled, measure, rerender])
+  }, [element, enabled, measure])
 
-  React.useEffect(() => {
+  createEffect(() => {
     if (!element || !enabled) {
       return
     }
 
     measure()
-    rerender()
 
     const observer = new ResizeObserver(() => {
       measure()
-      rerender()
     })
 
-    observer.observe(element as Element)
+    observer.observe(element() as Element)
 
-    return () => {
-      observer.unobserve(element as Element)
-    }
-  }, [element, enabled, measure, rerender])
+    onCleanup(() => {
+      observer.unobserve(element() as Element)
+    })
+  }, [element, enabled, measure])
 
-  return rectRef.current
+  return rectRef
 }

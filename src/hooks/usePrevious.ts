@@ -1,11 +1,11 @@
-import useIsomorphicLayoutEffect from './useIsomorphicLayoutEffect'
+import { Accessor, createEffect, createSignal } from 'solid-js'
 
-export default function usePrevious<T>(val: T) {
-  const ref = React.useRef<T>()
+export default function usePrevious<T>(val: Accessor<T>) {
+  const [ref, setRef] = createSignal()
 
-  useIsomorphicLayoutEffect(() => {
-    ref.current = val
-  }, [val])
+  createEffect(() => {
+    setRef(val)
+  })
 
-  return ref.current
+  return ref
 }

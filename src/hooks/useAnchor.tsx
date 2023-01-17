@@ -72,9 +72,9 @@ export function useAnchor(options: {
   anchorEl: Accessor<Element | null | undefined>
   tooltipEl: Accessor<Element | null | undefined>
 }) {
-  const portalDims = useRect(options.portalEl(), options.show())
-  const anchorDims = useRect(options.anchorEl(), options.show())
-  const tooltipDims = useRect(options.tooltipEl(), options.show())
+  const portalDims = useRect(options.portalEl, options.show())
+  const anchorDims = useRect(options.anchorEl, options.show())
+  const tooltipDims = useRect(options.tooltipEl, options.show())
 
   const sides = createMemo(() => {
     const side = options.side()
@@ -105,14 +105,14 @@ export function useAnchor(options: {
 
   // IF we have all of the dimensions needed to calculate
   // fits, then calculate the fit
-  const ready = portalDims && tooltipDims && anchorDims
+  const ready = portalDims() && tooltipDims() && anchorDims
 
   const fit = createMemo(() =>
-    ready && options.show()
+    ready() && options.show()
       ? fitOnBestSide({
-          portalDims,
-          tooltipDims,
-          anchorDims,
+          portalDims: portalDims(),
+          tooltipDims: tooltipDims(),
+          anchorDims: anchorDims(),
           sides: sides(),
           useLargest: options.useLargest?.(),
         })
@@ -123,7 +123,7 @@ export function useAnchor(options: {
     fit,
     style: {
       position: 'absolute' as const,
-      visibility: ready ? ('visible' as const) : ('hidden' as const),
+      visibility: ready() ? ('visible' as const) : ('hidden' as const),
       // The fit styles are applied here from the best fit
       ...fit()?.style,
     },

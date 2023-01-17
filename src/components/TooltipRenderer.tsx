@@ -3,6 +3,7 @@ import { sum } from 'd3-array'
 import { useAnchor } from '../hooks/useAnchor'
 import useLatestWhen from '../hooks/useLatestWhen'
 import { Axis, AxisLinear, AxisTime, Datum, ResolvedChartOptions } from '../types'
+import * as CSS from 'csstype'
 
 //
 //
@@ -20,7 +21,7 @@ export type TooltipRendererProps<TDatum> = {
   primaryAxis: Axis<TDatum>
   secondaryAxes: Axis<TDatum>[]
   secondaryAxis: Axis<TDatum>
-  getDatumStyle: (datum: Datum<TDatum>) => CSSProperties
+  getDatumStyle: (datum: Datum<TDatum>) => CSS.Properties
   anchor: ReturnType<typeof useAnchor>
 }
 

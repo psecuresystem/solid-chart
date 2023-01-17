@@ -1,12 +1,10 @@
-import * as React from 'react'
-
-import useIsomorphicLayoutEffect from './useIsomorphicLayoutEffect'
+import { createEffect, createSignal } from 'solid-js'
 
 export default function usePortalElement() {
-  const [portalEl, setPortalEl] = React.useState<HTMLDivElement | null>()
+  const [portalEl, setPortalEl] = createSignal()
 
-  useIsomorphicLayoutEffect(() => {
-    if (!portalEl) {
+  createEffect(() => {
+    if (!portalEl()) {
       let element = document.getElementById('react-charts-portal') as HTMLDivElement
 
       if (!element) {
